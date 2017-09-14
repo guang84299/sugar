@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pop Sugar</string>
+    <string name="pay_success">Successed</string>
+    <string name="pay_fail">Failed</string>
+    <string name="pay_cancel">Canceled</string>
+    <string name="pay_overtime">Item is delivered</string>
+</resources>
