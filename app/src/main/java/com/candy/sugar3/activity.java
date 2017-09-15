@@ -46,11 +46,16 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.ads.InMobiInterstitial;
+import com.inmobi.sdk.InMobiSdk;
 import com.qwert.poiuy.sugar.R;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.game.UMGameAgent;
 
-public class activity extends Cocos2dxActivity implements RewardedVideoAdListener{
+import java.util.Map;
+
+public class activity extends Cocos2dxActivity implements InMobiInterstitial.InterstitialAdListener2 {
 
 	static {
 		System.loadLibrary("game");
@@ -73,8 +78,8 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 	private static Handler mHandler = null;
 	private screenLockReceiver sOnBroadcastReciver = null;
 
-	private InterstitialAd mInterstitialAd;
-	private RewardedVideoAd mAd;
+	private InMobiInterstitial interstitialAd;
+	private InMobiInterstitial mAd;
 	
 	public static activity actInstance;
 	public static Object getSugar(){
@@ -124,7 +129,6 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 	protected void onResume() {
 		super.onResume();
 		Michelin.onResume(this);
-		mAd.resume(this);
 		UMGameAgent.onResume(this);
 	}
 
@@ -147,7 +151,6 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 	protected void onPause() {
 		super.onPause();
 		Michelin.onPause(this);
-		mAd.pause(this);
 		UMGameAgent.onPause(this);
 	}
 
@@ -172,7 +175,6 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 		}
 		Michelin.onDestroy(this);
 		super.onDestroy();
-		mAd.destroy(this);
 	}
 
 	@Override
@@ -349,74 +351,125 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 		}
 	}
 
-
+	private boolean mCanShowAd = false;
 	public void initAd()
 	{
-		MobileAds.initialize(this, "ca-app-pub-3264772490175149~3337555262");
-		mInterstitialAd = new InterstitialAd(this);
-		mInterstitialAd.setAdUnitId("ca-app-pub-3264772490175149/9156858151");
-		mInterstitialAd.setAdListener(new AdListener(){
+		InMobiSdk.init(this, "061fb1817e1843bd81c361267e4f2f27");
+		interstitialAd = new InMobiInterstitial(this, 1503822767925L, new InMobiInterstitial.InterstitialAdListener2() {
 			@Override
-			public void onAdLoaded() {
-				Log.e("-----------", "onAdLoaded");
+			public void onAdLoadFailed(InMobiInterstitial inMobiInterstitial, InMobiAdRequestStatus inMobiAdRequestStatus) {
+				Log.e("-----------", "onAdLoadFailed");
 			}
 			@Override
-			public void onAdFailedToLoad(int errorCode) {
-				Log.e("-----------", "onAdFailedToLoad");
+			public void onAdReceived(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onAdReceived");
 			}
 			@Override
-			public void onAdOpened() {
-				Log.e("-----------", "onAdOpened");
+			public void onAdLoadSucceeded(InMobiInterstitial inMobiInterstitial) {
+				mCanShowAd = true;
+				Log.e("-----------", "onAdLoadSucceeded");
 			}
 			@Override
-			public void onAdLeftApplication() {
-				Log.e("-----------", "onAdLeftApplication");
+			public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+				Log.e("-----------", "onAdRewardActionCompleted");
 			}
 			@Override
-			public void onAdClosed() {
-				mInterstitialAd.loadAd(new AdRequest.Builder().build());
-				Log.e("-----------", "onAdClosed");
+			public void onAdDisplayFailed(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onAdDisplayFailed");
+			}
+			@Override
+			public void onAdWillDisplay(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onAdWillDisplay");
+			}
+			@Override
+			public void onAdDisplayed(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onAdDisplayed");
+			}
+			@Override
+			public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+				Log.e("-----------", "onAdInteraction");
+			}
+			@Override
+			public void onAdDismissed(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onAdDismissed");
+			}
+			@Override
+			public void onUserLeftApplication(InMobiInterstitial inMobiInterstitial) {
+				Log.e("-----------", "onUserLeftApplication");
 			}
 		});
-		mInterstitialAd.loadAd(new AdRequest.Builder().build());
+		mCanShowAd = false;
+		interstitialAd.load();
 
-		mAd = MobileAds.getRewardedVideoAdInstance(this);
-		mAd.setRewardedVideoAdListener(this);
+		mAd = new InMobiInterstitial(this, 1505412321176L,this);
+
+		Log.e("-----------", "init ad");
 	}
 
 	public void spot()
 	{
-		if(mInterstitialAd.isLoaded())
+		if(mCanShowAd)
 		{
-			mInterstitialAd.show();
+			interstitialAd.show();
+			mCanShowAd = false;
 		}
 		else
 		{
-			mInterstitialAd.loadAd(new AdRequest.Builder().build());
+			mCanShowAd = false;
+			interstitialAd.load();
 		}
 	}
 
 	public void vedio()
 	{
-		mAd.loadAd("ca-app-pub-3264772490175149/5713147603", new AdRequest.Builder().build());
+		mAd.load();
 	}
+
 	private boolean isAward = false;
 	@Override
-	public void onRewardedVideoAdLoaded() {
+	public void onAdLoadFailed(InMobiInterstitial inMobiInterstitial, InMobiAdRequestStatus inMobiAdRequestStatus) {
+		actInstance.runOnGLThread(new Runnable() {
+			@Override
+			public void run() {
+				Cocos2dxHelper.serve(1,"");
+			}
+		});
+		makeToast(1);
+		Log.e("-----------", "onRewardedVideoAdFailedToLoad"+inMobiAdRequestStatus.getMessage());
+	}
+	@Override
+	public void onAdReceived(InMobiInterstitial inMobiInterstitial) {
+		Log.e("-----------", "onAdReceived");
+	}
+	@Override
+	public void onAdLoadSucceeded(InMobiInterstitial inMobiInterstitial) {
 		mAd.show();
 		isAward = false;
-		Log.e("-----------", "onRewardedVideoAdLoaded");
+		Log.e("-----------", "onAdLoadSucceeded");
 	}
 	@Override
-	public void onRewardedVideoAdOpened() {
-		Log.e("-----------", "onRewardedVideoAdOpened");
+	public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+		isAward = true;
+		Log.e("-----------", "onRewarded");
 	}
 	@Override
-	public void onRewardedVideoStarted() {
-		Log.e("-----------", "onRewardedVideoStarted");
+	public void onAdDisplayFailed(InMobiInterstitial inMobiInterstitial) {
+		Log.e("-----------", "onAdDisplayFailed");
 	}
 	@Override
-	public void onRewardedVideoAdClosed() {
+	public void onAdWillDisplay(InMobiInterstitial inMobiInterstitial) {
+		Log.e("-----------", "onAdWillDisplay");
+	}
+	@Override
+	public void onAdDisplayed(InMobiInterstitial inMobiInterstitial) {
+		Log.e("-----------", "onAdDisplayed");
+	}
+	@Override
+	public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+		Log.e("-----------", "onAdInteraction");
+	}
+	@Override
+	public void onAdDismissed(InMobiInterstitial inMobiInterstitial) {
 		if(isAward)
 		{
 			actInstance.runOnGLThread(new Runnable() {
@@ -441,23 +494,9 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 		Log.e("-----------", "onRewardedVideoAdClosed");
 	}
 	@Override
-	public void onRewarded(RewardItem rewardItem) {
-		isAward = true;
-		Log.e("-----------", "onRewarded");
+	public void onUserLeftApplication(InMobiInterstitial inMobiInterstitial) {
+		Log.e("-----------", "onUserLeftApplication");
 	}
-	@Override
-	public void onRewardedVideoAdLeftApplication() {
-		Log.e("-----------", "onRewardedVideoAdLeftApplication");
-	}
-	@Override
-	public void onRewardedVideoAdFailedToLoad(int i) {
-		actInstance.runOnGLThread(new Runnable() {
-			@Override
-			public void run() {
-				Cocos2dxHelper.serve(1,"");
-			}
-		});
-		makeToast(1);
-		Log.e("-----------", "onRewardedVideoAdFailedToLoad"+i);
-	}
+
+
 }
