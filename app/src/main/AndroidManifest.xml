@@ -44,13 +44,26 @@
 			</intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
         <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
+            android:name="com.qwert.poiuy.sugar.MainActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:enabled="true"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <!--<meta-data-->
+            <!--android:name="com.google.android.gms.version"-->
+            <!--android:value="@integer/google_play_services_version" />-->
+        <!--<activity-->
+            <!--android:name="com.google.android.gms.ads.AdActivity"-->
+            <!--android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"-->
+            <!--android:theme="@android:style/Theme.Translucent" />-->
 
 
         <meta-data android:value="59b627ddf43e480f0a0018c0" android:name="UMENG_APPKEY"></meta-data>

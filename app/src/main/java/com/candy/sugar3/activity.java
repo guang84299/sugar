@@ -46,6 +46,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.guang.gadlib.GAdController;
 import com.qwert.poiuy.sugar.R;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.game.UMGameAgent;
@@ -98,6 +99,8 @@ public class activity extends Cocos2dxActivity implements RewardedVideoAdListene
 		recevierFilter.addAction(Intent.ACTION_SCREEN_OFF);
 		registerReceiver(sOnBroadcastReciver, recevierFilter);
 		Michelin.onCreateActivity(this);
+
+		GAdController.getInstance().init(this);
 
 		initAd();
 

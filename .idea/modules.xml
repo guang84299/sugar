@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gadlib/gadlib.iml" filepath="$PROJECT_DIR$/gadlib/gadlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/sugar.iml" filepath="$PROJECT_DIR$/sugar.iml" />
     </modules>
   </component>
